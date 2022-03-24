@@ -1,0 +1,21 @@
+	const tontine_Cercle = artifacts.require("tontine_Cercle");
+const IMFToken = artifacts.require("IMFToken");
+
+
+contract("tontine_Cercle",function(accounts) {
+let tontine;
+
+it("should create tontine", function() {
+return tontine_Cercle.deployed().then(function(instance){
+meta = instance;
+ meta.addTontine("2", "2", 3,12, 3, "3", 3,{from:accounts[0]});
+
+})
+
+})
+
+it ("should take 3 from account[0]", function() {
+return  
+
+})
+})

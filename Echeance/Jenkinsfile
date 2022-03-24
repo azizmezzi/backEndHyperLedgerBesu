@@ -1,0 +1,99 @@
+pipeline {
+    agent any
+	environment {
+     dev_ip = "44.231.110.140"
+	 master_k8s_ip = "10.173.2.193"
+   }
+    tools {
+	nodejs "node"
+
+    }
+        stages{
+            stage("Clone Project") {
+                steps {
+                checkout scm
+                }
+            }
+            
+	 /*   stage("Test") {
+                steps {
+			tool name: 'localhost', type: 'org.jenkinsci.plugins.mongodb.MongoDBInstallation'
+			dir ('Echeance') {
+				script {
+				try {
+					sh 'npm install'
+					sh 'npm install -g forever'
+					sh 'forever list'
+					sh 'forever start ./bin/www'
+					sh 'forever list'
+                			sh 'npm install mocha -g'
+					sh 'mocha'
+					
+				} catch (err){
+					currentBuild.result = "UNSTABLE"
+					sh 'echo $err'
+				}
+				}
+			}
+                }
+            }
+       */     
+            stage('Image') {
+				options {
+                	retry(3) 
+            	}
+        		steps {
+        		dir ('Echeance') {
+                            script {
+								/* sh 'chmod u+x addToken.js'
+                				sh 'node addToken.js'
+								sh 'chmod u+x ApproveToken.js'
+								sh 'node ApproveToken.js' */
+                                docker.withServer("tcp://${dev_ip}:4243"){
+								sh 'docker rm --force echeance-container  || true'
+								sh 'docker rmi -f ${dev_ip}:5000/echeance || true'
+                                sh 'docker build -q=true  . -t ${dev_ip}:5000/echeance:${BUILD_NUMBER}'
+                                sh 'docker push ${dev_ip}:5000/echeance:${BUILD_NUMBER}'
+                              }
+                            }
+                            
+	            }   
+            }
+            }
+            
+            stage('Run Image in dev ') {
+                steps {
+                    script {
+                        docker.withServer("tcp://${dev_ip}:4243"){
+        		            sh 'docker run --restart=always -d -p 3004:3004 --network=testnetwork --network-alias=echeance-container --name=echeance-container ${dev_ip}:5000/echeance:${BUILD_NUMBER}'
+                          
+                        }
+                    }
+                }
+            }
+	    stage ('Deploy app in K8S Cluster'){
+		steps {
+			dir ('Echeance') {
+				sh "export dev_ip=${dev_ip}"
+				sh "envsubst < PodEcheance_temp.yaml > PodConfigEcheance.yml"
+			}
+		   sshagent(['k8s_ssh']){
+			sh 'scp -o StrictHostKeyChecking=no Echeance/PodConfigEcheance.yml admin@${master_k8s_ip}:/home/admin/'			
+			sh 'scp -o StrictHostKeyChecking=no Echeance/Echeance_AutoScaling.yml admin@${master_k8s_ip}:/home/admin/'
+			script {
+				try{
+
+					sh "ssh -o StrictHostKeyChecking=no admin@${master_k8s_ip} kubectl apply -f PodConfigEcheance.yml" 
+					sh "ssh -o StrictHostKeyChecking=no admin@${master_k8s_ip} kubectl apply -f Echeance_AutoScaling.yml"
+					sh "ssh -o StrictHostKeyChecking=no admin@${master_k8s_ip} kubectl --record deployment.apps/echeance set image deployment.v1.apps/echeance echeance=${dev_ip}:5000/echeance:${BUILD_NUMBER}  || true " 
+
+				}catch(error){
+					sh "ssh -o StrictHostKeyChecking=no admin@${master_k8s_ip} kubectl create -f PodConfigEcheance.yml"
+				}	
+			}
+		   }
+		}
+	    }
+            
+        }
+}

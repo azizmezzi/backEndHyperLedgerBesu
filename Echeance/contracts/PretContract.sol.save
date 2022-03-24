@@ -1,0 +1,399 @@
+pragma solidity 0.5.11;
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+/**
+ * @title ERC20Basic
+ * @dev Simpler version of ERC20 interface
+ * @dev see https://github.com/ethereum/EIPs/issues/179
+ */
+contract ERC20Basic {
+  function totalSupply() public view returns (uint256);
+  function balanceOf(address who) public view returns (uint256);
+  function transfer(address to, uint256 value) public returns (bool);
+  function transfers(address from_,address _to, uint256 _value) public returns (bool);
+  event Transfer(address indexed from, address indexed to, uint256 value);
+}
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+/**
+ * @title ERC20 interface
+ * @dev see https://github.com/ethereum/EIPs/issues/20
+ */
+contract ERC20 is ERC20Basic {
+  function allowance(address owner, address spender) public view returns (uint256);
+  function transferFrom(address from, address to, uint256 value) public returns (bool);
+  function approve(address spender, uint256 value) public returns (bool);
+  event Approval(address indexed owner, address indexed spender, uint256 value);
+}
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+contract PretContract {
+    
+    
+        address public owner;
+        uint256 public idEcheanceGlobale = 0;
+         uint public idPretGlobale = 0;
+
+
+     struct echeance {
+        string idEcheance;
+        uint256 montant;
+        uint256 DateLimite ;
+        uint256 DateLancement ;
+        uint256 DatePaiement;
+        address intermediate ;
+        // nonPayé .... false : payé .... true
+        bool status;
+        bytes32 transaction_hash;
+        
+        
+    }
+    
+    struct Pret {
+        string idPret ;
+        uint256 DateCreation ;
+        // 0 : nonPayé .... 1 : payé .... 2 : bloqué
+        uint256 status ;
+        address borrower ;
+        uint256 NombreEcheances ;
+        mapping (string=>echeance)  ListEcheances;
+        string [] NbrListEcheances;
+
+ 
+
+        
+  
+    }
+    
+    
+    
+    
+    mapping (address => mapping (uint => Pret)) public ListePret;
+    
+    mapping(address => uint) public NombrePret;
+
+//  mapping(string => Pret) public ListPrets;
+
+  //  string[] public NbrListPrets;
+
+ mapping(bytes32 => address) public tokens;
+ 
+   ERC20 public ERC20Interface;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+
+    constructor() public {
+         owner = msg.sender;
+
+ 
+
+    }
+    
+    
+        
+     function addNewToken(bytes32 symbol_, address address_) public returns (bool) {
+  tokens[symbol_] = address_;
+
+ 
+
+  return true;
+ }
+    
+function transferBackTokens( address adh, uint amount) public {
+    
+ bytes32 symbol_ = SymbolToken();
+
+ 
+
+  address contract_ = tokens[symbol_];
+  address from_ = adh;
+  ERC20Interface = ERC20(contract_);
+
+ 
+
+ 
+
+ 
+
+  ERC20Interface.transfers(from_,owner, amount);
+
+ 
+
+ 
+
+ 
+
+ }
+ 
+ 
+     function SymbolToken() public pure returns (bytes32 result) {
+        string memory testFoo = "IMFT";
+         assembly {
+        result := mload(add(testFoo, 32))
+        }
+    }
+
+    
+     
+function uint2str(uint i) internal pure returns (string memory){
+    if (i == 0) return "0";
+    uint j = i;
+    uint length;
+    while (j != 0){
+        length++;
+        j /= 10;
+    }
+    bytes memory bstr = new bytes(length);
+    uint k = length - 1;
+    while (i != 0){
+        bstr[k--] = byte(uint8(48 + i % 10)); 
+        i /= 10;
+    }
+    return string(bstr);
+}
+
+
+ 
+ function concat(string memory _base, string memory _value)
+        internal
+        pure
+        returns (string memory) {
+        bytes memory _baseBytes = bytes(_base);
+        bytes memory _valueBytes = bytes(_value);
+
+ 
+
+        assert(_valueBytes.length > 0);
+
+ 
+
+        string memory _tmpValue = new string(_baseBytes.length +
+            _valueBytes.length);
+        bytes memory _newValue = bytes(_tmpValue);
+
+ 
+
+        uint i;
+        uint j;
+
+ 
+
+        for (i = 0; i < _baseBytes.length; i++) {
+            _newValue[j++] = _baseBytes[i];
+        }
+
+ 
+
+        for (i = 0; i < _valueBytes.length; i++) {
+            _newValue[j++] = _valueBytes[i];
+        }
+
+ 
+
+        return string(_newValue);
+    }
+  
+ 
+    
+    function addPret( 
+        address borrower,
+        uint256 NombreEcheances) public {
+            
+            
+          string memory idPret =  concat("PR",uint2str(idPretGlobale)) ;
+          
+          ListePret[borrower][NombrePret[borrower]+1].idPret = idPret;
+        
+        ListePret[borrower][NombrePret[borrower]+1].DateCreation = now;
+        
+        ListePret[borrower][NombrePret[borrower]+1].status = 0;
+        
+        ListePret[borrower][NombrePret[borrower]+1].borrower = borrower;
+        
+        ListePret[borrower][NombrePret[borrower]+1].NombreEcheances = NombreEcheances;
+        
+        NombrePret[borrower] = NombrePret[borrower]+1;
+        
+        idPretGlobale ++ ;
+
+ 
+        }
+        
+          function getPretInfoByBorrower(uint256 index, address borrower) public view returns (string memory, uint256 , uint256, address, uint256) {
+              
+              return(ListePret[borrower][index].idPret, ListePret[borrower][index].DateCreation, ListePret[borrower][index].status, ListePret[borrower][index].borrower, ListePret[borrower][index].NombreEcheances);
+              
+             
+         }
+         
+        function getPretLengthByBorrower(address borrower) public view returns( uint) {
+            
+            return (NombrePret[borrower]);
+            
+        }
+        
+             
+       
+        function addEcheaance(   
+//        string memory idPret,
+        uint256 montant,
+        uint256 DateLimite,
+        uint256 DateLancement,
+        address borrower
+       ) public {
+     
+               string memory idEcheance =  concat("E",uint2str(idEcheanceGlobale)) ;
+
+       require(ListePret[borrower][NombrePret[borrower]].NbrListEcheances.length <=  ListePret[borrower][NombrePret[borrower]].NombreEcheances);
+       
+       ListePret[borrower][NombrePret[borrower]].ListEcheances[idEcheance].idEcheance = idEcheance;
+       
+       ListePret[borrower][NombrePret[borrower]].ListEcheances[idEcheance].montant = montant;
+       
+       ListePret[borrower][NombrePret[borrower]].ListEcheances[idEcheance].DateLimite = DateLimite;
+       
+       ListePret[borrower][NombrePret[borrower]].ListEcheances[idEcheance].intermediate = address(0);
+       
+       ListePret[borrower][NombrePret[borrower]].ListEcheances[idEcheance].DateLancement = DateLancement;
+       
+       ListePret[borrower][NombrePret[borrower]].ListEcheances[idEcheance].transaction_hash = 0x0;
+       
+       ListePret[borrower][NombrePret[borrower]].ListEcheances[idEcheance].status = false;
+       
+       ListePret[borrower][NombrePret[borrower]].NbrListEcheances.push(idEcheance);
+     
+        idEcheanceGlobale ++ ;
+        
+    
+
+ 
+        }
+        
+        
+          function getEcheanceInfoByBorrower(uint256 indexP, string memory indexE, address borrower) public view returns (string memory, uint256 , uint256, address, uint256) {
+              
+              return(ListePret[borrower][indexP].ListEcheances[indexE].idEcheance,ListePret[borrower][indexP].ListEcheances[indexE].montant, ListePret[borrower][indexP].ListEcheances[indexE].DateLimite, ListePret[borrower][indexP].ListEcheances[indexE].intermediate,
+              ListePret[borrower][indexP].ListEcheances[indexE].DateLancement);
+              
+             
+         }
+         
+        function getEcheanceLengthByBorrower(address borrower, uint256) public view returns( uint) {
+            
+            return (ListePret[borrower][NombrePret[borrower]].NbrListEcheances.length);
+            
+        }
+        
+   
+         
+       
+    function setTransactionHash(
+        bytes32 trHash,
+        string memory idEcheance,
+        uint256 indexP,
+        address borrower
+    ) public {
+        
+        ListePret[borrower][indexP].ListEcheances[idEcheance].transaction_hash = trHash;
+    
+
+    }
+    
+
+    function payerEcheance( uint256 indexP, address borrower, string memory idEcheance) public {
+        
+        
+        require(ListePret[borrower][indexP].borrower == msg.sender);
+        
+        require (ListePret[borrower][indexP].ListEcheances[idEcheance].DateLimite > now );
+     
+        require(ListePret[borrower][indexP].ListEcheances[idEcheance].status == false);
+        
+        uint256 amount = ListePret[borrower][indexP].ListEcheances[idEcheance].montant;
+        
+        transferBackTokens( msg.sender, amount);
+        
+        ListePret[borrower][indexP].ListEcheances[idEcheance].status = true;
+        
+       ListePret[borrower][indexP].ListEcheances[idEcheance].DatePaiement = now;
+        
+   
+
+ 
+
+    }
+    
+    
+    function PayerEcheanceIntermadiate(uint256 indexP, address borrower, string memory idEcheance) public
+    {
+        
+        
+         require(ListePret[borrower][indexP].borrower == msg.sender);
+        
+        require (ListePret[borrower][indexP].ListEcheances[idEcheance].DateLimite > now );
+     
+        require(ListePret[borrower][indexP].ListEcheances[idEcheance].status == false);
+        
+        uint256 amount = ListePret[borrower][indexP].ListEcheances[idEcheance].montant;
+        
+        transferBackTokens( msg.sender, amount);
+        
+        ListePret[borrower][indexP].ListEcheances[idEcheance].status = true;
+        
+        ListePret[borrower][indexP].ListEcheances[idEcheance].intermediate = msg.sender;
+        
+        ListePret[borrower][indexP].ListEcheances[idEcheance].DatePaiement = now;
+        
+        
+    }
+ 
+  
+      
+    
+
+
+
+
+}

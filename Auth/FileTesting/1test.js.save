@@ -1,0 +1,12 @@
+0x2114De86c8Ea1FD8144C2f1e1e94C74E498afB1b
+
+const Web3 = require('web3');
+const ethTx = require('ethereumjs-tx')
+//const PaymentDeadLine = require('./compile/compile');
+//const depot = require('/home/ec2-user/newdepot/dp/compile2');
+//const CO = require('../Anas_k2lisss/compile');
+var Contract = require('./contract');
+var http = require('http');
+var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+var mysc = new web3.eth.Contract(Contract.Abi,Contract.addressTontine)
+

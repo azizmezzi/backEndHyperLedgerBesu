@@ -1,0 +1,32 @@
+{
+  "name": "cashin",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "bcrypt": "^3.0.7",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "cookie-parser": "~1.4.4",
+    "cryptr": "^6.0.1",
+    "debug": "~2.6.9",
+    "ethereumjs-tx": "^1.3.7",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "mobile-detect": "^1.4.4",
+    "mocha": "^7.1.0",
+    "mongoose": "^5.8.1",
+    "morgan": "~1.9.1",
+    "truffle-hdwallet-provider": "^1.0.17",
+    "websocket": "^1.0.32",
+    "ws": "^7.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.10.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.1"
+  }
+}

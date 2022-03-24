@@ -1,0 +1,60 @@
+* {
+	box-sizing: border-box;
+	outline: none;
+}
+
+/*---------------------------------------------------------------------------------------*/
+
+.nicescroll-rails,
+.nicescroll-rails * { box-sizing: content-box; }
+
+/*-------------------------------------------------------------------------------*/
+
+body {
+    height: 100vh;
+    margin: 0;
+    
+    background-image: url("../../images/bg-overlay.png"), linear-gradient(40deg, #F15A24 0%, #FBAE17 60%);
+    background-size: contain, auto;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    color: #FFF;
+}
+
+/*-------------------------------------------------------------------------------*/
+
+* { outline: none; }
+
+/*-------------------------------------------------------------------------------*/
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/*-------------------------------------------------------------------------------*/
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-animation: autofill 0s forwards;
+    animation: autofill 0s forwards;
+}
+
+@keyframes autofill {
+    100% {
+        background: transparent;
+        color: inherit;
+    }
+}
+
+@-webkit-keyframes autofill {
+    100% {
+        background: transparent;
+        color: inherit;
+    }
+}

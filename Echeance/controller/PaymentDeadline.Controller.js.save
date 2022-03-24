@@ -1,0 +1,253 @@
+
+
+var Web3 = require('web3');
+web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));
+const Contract = require('../contract');
+var mySC = new web3.eth.Contract(Contract.Abi,Contract.address);
+var mySCIMFT = new web3.eth.Contract(Contract.AbiImft,Contract.addressImft)
+
+const IMFTowner = "0xfe3b557e8fb62b89f4916b721be55ceb828dbd73";
+
+const Cryptr = require('cryptr');
+const cryptr = new Cryptr('myTotalySecretKey');
+
+
+
+
+exports.BalanceOf = (req, res) => {
+console.log(req.body.owner);
+        mySCIMFT.methods.balanceOf(req.body.owner).call(function(error,result){
+           res.send({balance: result})
+  }).catch(e=>console.log(e));
+}
+
+
+exports.convert = (req, res) => {
+	mySC.methods.convertttt().call(function (error, result) {
+		res.send(result);
+	})
+}
+
+exports.getPDIndexes = (req, res) => {
+  mySC.methods.getDeadlinesIndexes(req.body.borrower).call(function(error,result){
+    if(result){
+      res.send({result:result})
+    }else {
+      res.status(604).send({error: "indexes not found"})
+    }
+  })
+};
+
+exports.getPDinfo = (req, res) => {
+  mySC.methods.getDeadlineInfo(req.body.id ,req.body.borrower).call(function(error,result){
+    if(result){
+      res.send({id_op: result["0"] , id_loan: result["1"],borrower: result["2"],intermediate: result["3"],DateDeadline: result["4"],amount: result["5"],DatePaiement: result["6"],state: result["7"]})
+    }else {
+      res.status(605).send({error: "Payment DeadLine not found "})
+    }
+  })
+};
+
+exports.updatePDhash = (req, res) => {
+  web3.eth.accounts.wallet.add('0x8f2a55949038a9610f50fb23b5883af3b4ecb3c3bb792cbcefbd1542c692be63');
+//const decryptedPK = cryptr.decrypt(req.body.privateKey);
+
+ // web3.eth.accounts.wallet.add(decryptedPK);
+  mySC.methods.UpdatePaymentDeadlinehash(req.body.id,req.body.hash)
+  .send({from: IMFTowner,gas:3000000},function(error,result){
+  })
+  .then(result => {res.send(result)})
+  .catch(e=>res.status(601).send({ error: "failed to update Payment DeadLine" }));
+};
+
+
+
+
+exports.addPD = async (req, res) => {
+const sender = IMFTowner;
+const reciver = req.body.borrower;
+web3.eth.accounts.wallet.add('0x8f2a55949038a9610f50fb23b5883af3b4ecb3c3bb792cbcefbd1542c692be63');
+//const decryptedPK = cryptr.decrypt(req.body.privateKey);
+
+//  web3.eth.accounts.wallet.add(decryptedPK);
+ mySC.methods.AddPaymentDeadline(req.body.DateDeadline,req.body.id_loan,req.body.amount,req.body.borrower)
+  .send({from: IMFTowner,gas:3000000},function(error,result){
+  })
+  .then(result => {res.send(result)})
+  .catch(e=>{console.log(e);
+res.status(600).send({ error: "failed to add Payment DeadLine" })});
+
+
+
+};
+
+exports.updatePD = (req, res) => {
+    web3.eth.accounts.wallet.add('0x8f2a55949038a9610f50fb23b5883af3b4ecb3c3bb792cbcefbd1542c692be63');
+//const decryptedPK = cryptr.decrypt(req.body.privateKey);
+
+  //web3.eth.accounts.wallet.add(decryptedPK);
+  mySC.methods.UpdatePaymentDeadline(req.body.id)
+  .send({from: IMFTowner,gas:3000000},function(error,result){
+  })
+  .then(result => {res.send(result)})
+  .catch(e=>res.status(601).send({ error: "failed to update Payment DeadLine" }));
+};
+
+exports.accomplishPD = (req, res) => {
+//    web3.eth.accounts.wallet.add('0x8f2a55949038a9610f50fb23b5883af3b4ecb3c3bb792cbcefbd1542c692be63');
+const decryptedPK = cryptr.decrypt(req.body.privateKey);
+
+  web3.eth.accounts.wallet.add(decryptedPK);
+  mySC.methods.accomplishEcheance(req.body.id,req.body.amout)
+  .send({from: req.body.borrower,gas:3000000},function(error,result){
+
+
+})
+.then(result => {res.send(result)})
+  .catch(e=>{res.status(602).send({ error: "failed to accomplish Payment DeadLine" })
+console.log(e)});
+};
+
+
+
+
+exports.interPayPD = (req, res) => {
+//    web3.eth.accounts.wallet.add('0x8f2a55949038a9610f50fb23b5883af3b4ecb3c3bb792cbcefbd1542c692be63');
+const decryptedPK = cryptr.decrypt(req.body.privateKey);
+
+  web3.eth.accounts.wallet.add(decryptedPK);
+  mySC.methods.intermediatePayEcheance(req.body.charger,req.body.amout,req.body.id)
+  .send({from: req.body.intermediate,gas:3000000},function(error,result){
+  })
+  .then(result => {res.send(result)})
+  .catch(e=>res.status(603).send({ error: "failed to accomplish Payment DeadLine as intermediate" }));
+};
+
+ 
+
+ 
+
+
+
+exports.notification = (req, res) => {
+
+  var notif = [];
+
+
+
+  mySC.methods.getPDLength(req.body.borrower).call((error, result) => {
+
+    // if (error) (console.log(error) )
+
+    // var tab =[...result]
+
+    //console.log(tab.length)
+
+    // console.log("TODAY->" + Date.now()/1000)
+
+    console.log(result)
+
+if(result!=0)
+
+    {for (i = 0; i < result; i++) {
+
+      (function(i) {
+
+        mySC.methods.getPDIndex(req.body.borrower, i).call((err, result1) => {
+
+          mySC.methods
+
+            .getDeadlineInfo(result1, req.body.borrower)
+
+            .call((err, pd) => {
+
+              mySC.methods.getNotification(result1).call((err, no) => {
+
+                if (
+
+
+                  Date.now() / 1000 <= pd[4] &&
+
+                  Date.now() / 1000 >= pd[4] - 604800 &&
+
+                  pd[7] == 0
+
+                ) {
+
+                  var n = no[0];
+
+                  var al = no[1];
+
+
+
+                  if (no[0] <= 2) {
+
+                    mySC.methods
+
+                      .setNotification(result1)
+
+                      .send({ from: IMFTowner, gas: 3000000 }, function(
+
+                        error,
+
+                        resultn
+
+                      ) {});
+
+
+
+                    n = parseInt(no[0], 10) + 1;
+
+                    console.log("inIF" + n);
+
+                  } else if (no[1] == 0) {
+
+                    mySC.methods
+
+                      .setAlerte(result1)
+
+                      .send({ from: IMFTowner, gas: 3000000 }, function(
+
+                        error,
+
+                        resultn
+
+                      ) {});
+
+                    al = parseInt(no[1], 10) + 1;
+
+                  }
+
+
+
+                  console.log(n);
+
+                  var a = { pd, notif: n, alerte: al };
+
+                  notif.push(a);
+
+                }
+
+
+
+                if (result - 1 === i) {
+
+                  res.send(notif);
+
+                }
+
+              });
+
+            });
+
+        });
+
+      })(i);
+
+    }}else res.send(notif);
+
+  });
+
+};
+
+

@@ -1,0 +1,8 @@
+var assert = require('assert').assert;
+const controller =  require('../controller/Tontine');
+
+describe('test Tontine',()=>{
+	describe('Test create Tontine',()=>{
+
+}
+})

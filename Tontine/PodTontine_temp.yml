@@ -1,0 +1,57 @@
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: tontine
+#   namespace: default
+# spec:
+#   selector:
+#     app: tontine
+#   ports:
+#   - protocol: TCP
+#     port: 3005
+#     targetPort: 3005
+#   type: NodePort
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: tontine-service
+spec:
+  selector:
+    app: tontine
+  ports:
+    - port: 3005 # Default port for image
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tontine
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tontine
+  template:
+    metadata:
+      labels:
+        app: tontine
+    spec:
+      containers:
+      - name: tontine
+        image: ${dev_ip}:5000/tontine:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3005
+        resources:
+          requests:
+            # cpu 250m = 0.250 of cpu
+            # memory: "64Mi"
+            cpu: "250m"
+          #limits:
+            # memory: "128Mi"
+            #cpu: "500m"

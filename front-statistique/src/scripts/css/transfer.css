@@ -1,0 +1,12 @@
+.form-submit {
+    height: 35px;
+    width: 100%;
+    border-radius: 3px;
+    border: none;
+    background-image: linear-gradient(to bottom, #FFF, rgba(0,0,0,.05));
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,.1));
+    font-family: inherit;
+    font-size: 13px;
+    color: rgb(122, 122, 122);
+    cursor: pointer;
+}

@@ -1,0 +1,105 @@
+var Web3 = require("web3");
+web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));
+const Contract = require("../contract");
+var PretContract = new web3.eth.Contract(Contract.Abi, Contract.address);
+var mySCIMFT = new web3.eth.Contract(Contract.AbiImft, Contract.addressImft);
+
+const IMFTowner = "0xfe3b557e8fb62b89f4916b721be55ceb828dbd73";
+
+const Cryptr = require("cryptr");
+const cryptr = new Cryptr("myTotalySecretKey");
+
+exports.BalanceOf = (req, res) => {
+  mySCIMFT.methods
+    .balanceOf(req.query.owner)
+    .call(function (error, result) {
+      res.send({ balance: result });
+    })
+    .catch((e) => console.log(e));
+};
+
+exports.AddPret = (req, res) => {
+  const decryptedPK = cryptr.decrypt(req.body.privateKey);
+
+  web3.eth.accounts.wallet.add(decryptedPK);
+  const date_Actuel = new Date();
+console.log(date_Actuel);
+  PretContract.methods
+    .addPret(req.body.borrower, req.body.echeance.length, date_Actuel.getTime())
+    .send({ from: req.body.borrower, gas: 3000000 }, function (error, result) {
+      if (error != null) {	
+        const echeance = req.body.echeance;
+     
+
+        for (let i = 0; i < echeance.length; i++) {
+          PretContract.methods
+            .addEcheance(
+              echeance[i].montant,
+              echeance[i].DateLimite,
+              echeance[i].DateLancement,
+              req.body.borrower,
+              date_Actuel.getTime()
+            )
+            .send({ from: req.body.borrower, gas: 3000000 }, function (
+              error,
+              result2
+            ) {
+              console.log({ result2 });
+            })
+            .catch((e) => console.log(e));
+        }
+      }
+res.send(result)
+    })
+    .catch((e) => console.log(e));
+};
+
+exports.getPret = async (req, res) => {
+  const Pret = [];
+  await PretContract.methods
+    .getPretLengthByBorrower(req.query.borrower)
+    .call(async function (error, result) {
+      for (let i = 0; i < result["0"]; i++) {
+        await PretContract.methods
+          .getPretInfoByBorrower(i,req.query.borrower)
+          .call(function (error, result2) {
+            Pret.push(result2);
+          })
+          .catch((e) => console.log(e));
+      }
+      res.send({ nombrePret: result, Pret });
+    })
+    .catch((e) => console.log(e));
+};
+
+exports.getEcheance = async (req, res) => {
+  const echeance = [];
+  await PretContract.methods
+    .getEcheanceLengthByBorrower(req.query.borrower)
+    .call(async function (error, result) {
+      for (let i = 0; i < result["0"]; i++) {
+        await PretContract.methods
+          .getEcheanceInfo(req.query.borrower, i)
+          .call(function (error, result2) {
+            echeance.push(result2);
+          })
+          .catch((e) => console.log(e));
+      }
+      res.send({ nombreEcheance: result, echeance });
+    })
+    .catch((e) => console.log(e));
+};
+
+exports.PayerEcheance = async (req, res) => {
+  const decryptedPK = cryptr.decrypt(req.body.privateKey);
+
+  web3.eth.accounts.wallet.add(decryptedPK);
+
+  await PretContract.methods
+    .PaierEcheance(req.body.indexP, req.body.borrower, req.query.idEcheance)
+    .send({ from: req.body.borrower, gas: 3000000 }, function (error, result) {
+      res.send({ nombrePret: result, Pret });
+    })
+    .catch((e) => console.log(e));
+};
+

@@ -1,0 +1,93 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/*-------------------------------------------------------------------------------*/
+
+#wrapper2 {
+    display: flex; min-height: 530px;
+    flex-direction: column;
+    align-items: center;
+    
+    padding: 50px;
+}
+
+#wrapper2 > header { margin-bottom: auto; }
+#wrapper2 > header > #logo {
+    height: 100px; width: 100px;
+    
+    background-image: url("../../images/logo.svg");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,.2));
+}
+
+/*-------------------------------------------------------------------------------*/
+
+#wrapper2 > section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#wrapper2 > section > form { margin-bottom: 30px; }
+
+/*-------------------------------------------------------------------------------*/
+
+.form-field2s { margin-bottom: 40px; }
+
+.form-field2 + .form-field2set { margin-top: 20px; }
+.form-field2set + .form-field2set { margin-top: 0; }
+.form-field2set:not(:last-child) { margin-bottom: 30px; }
+
+.form-field2 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    
+    border-bottom: solid 1px #FFF;
+    
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,.1));
+    
+    font-size: 13px;
+}
+.form-field2:not(:last-child) { margin-bottom: 10px; }
+
+.form-field2 > label {
+    margin-right: 10px;
+    
+    line-height: 30px;
+}
+.form-field2 > label:after { content: " :"; }
+.form-field2 > .field {
+    width: 200px; height: 30px;
+    
+    background-color: transparent;
+    border: none;
+    outline: none;
+    
+    font: inherit;
+    color: inherit;
+}
+
+/*-------------------------------------------------------------------------------*/
+
+.form-submit {
+    height: 35px; width: 100%;
+    
+    border-radius: 3px;
+    border: none;
+    
+    background-image: linear-gradient(to bottom, #FFF, rgba(0,0,0,.05));
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,.1));
+    
+    font-family: inherit;
+    font-size: 13px;
+    color: #FF6633;
+    
+    cursor: pointer;
+}

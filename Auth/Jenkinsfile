@@ -1,0 +1,101 @@
+pipeline {
+    agent any
+	environment {
+     dev_ip = "44.231.110.140"
+	 master_k8s_ip = "10.173.2.193"
+   }
+    tools {
+	nodejs "node"
+
+    }
+        stages{
+            stage("Clone Project") {
+                steps {
+                checkout scm
+                }
+            }
+            
+	   /* stage("Test") {
+                steps {
+			tool name: 'localhost', type: 'org.jenkinsci.plugins.mongodb.MongoDBInstallation'
+			dir ('Auth/test') {
+				script {
+				try {
+					sh 'npm cache clean --force'
+					sh 'npm install -g npm'
+					sh 'npm install'
+					sh 'npm install -g forever'
+					sh 'forever list'
+					sh 'forever start ../bin/www'
+					sh 'forever list'
+                			sh 'npm install mocha -g'
+                	sh 'mongo'
+                	sh 'use demo1'
+                	sh 'db.users.remove({email:"raaed@gmail.com"})'
+					sh 'mocha'
+				} catch (err){
+					currentBuild.result = "UNSTABLE"
+					sh 'echo $err'
+				}
+				}
+			}
+                }
+            }*/
+
+            stage('Image') {
+				options {
+                	retry(3) 
+            	}
+        		steps {
+        		dir ('Auth') {
+							sh 'echo "My variable is ${dev_ip}"'
+                            script {
+                                docker.withServer("tcp://${dev_ip}:4243"){
+								sh 'docker rm --force auth-container  || true'
+								sh 'docker rmi -f ${dev_ip}:5000/auth   || true'
+                                sh 'docker build -q=true --no-cache . -t ${dev_ip}:5000/auth:${BUILD_NUMBER}'
+                                sh 'docker push ${dev_ip}:5000/auth:${BUILD_NUMBER}'
+                              }
+                            }
+                            
+	            }   
+            }
+            }
+            
+            stage('Run Image in dev ') {
+                steps {
+                    script {
+                        docker.withServer("tcp://${dev_ip}:4243"){
+        		            sh 'docker run --restart=always -d -p 3001:3001  --name=auth-container   ${dev_ip}:5000/auth:${BUILD_NUMBER}'
+                          
+                        }
+                    }
+                }
+            }
+	    stage ('Deploy app in K8S Cluster'){
+		steps {
+			dir ('Auth') {
+				sh "export dev_ip=${dev_ip}"
+				sh "envsubst < PodAuth_temp.yaml > PodConfigAuth.yml"
+			}
+		   sshagent(['k8s_ssh']){
+			sh 'scp -o StrictHostKeyChecking=no Auth/PodConfigAuth.yml admin@${master_k8s_ip}:/home/admin/'
+			sh 'scp -o StrictHostKeyChecking=no Auth/Auth_AutoScaling.yml admin@${master_k8s_ip}:/home/admin/'			
+			script {
+				try{
+					sh "ssh -o StrictHostKeyChecking=no admin@${master_k8s_ip} kubectl apply -f PodConfigAuth.yml" 
+
+					sh "ssh -o StrictHostKeyChecking=no admin@${master_k8s_ip} kubectl apply -f Auth_AutoScaling.yml"
+
+                    sh "ssh -o StrictHostKeyChecking=no admin@${master_k8s_ip} kubectl --record deployment.apps/auth set image deployment.v1.apps/auth auth=${dev_ip}:5000/auth:${BUILD_NUMBER}"
+
+				}catch(error){
+					sh "ssh -o StrictHostKeyChecking=no admin@${master_k8s_ip} kubectl create -f PodConfigAuth.yml"
+				}	
+			}
+		   }
+		}
+	    }
+            
+        }
+}

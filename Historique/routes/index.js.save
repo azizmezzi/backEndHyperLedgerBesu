@@ -1,0 +1,11 @@
+	var express = require('express');
+var router = express.Router();
+//  const ControllerMethods = require('../Controler/DEPOTCONTROLER');
+
+  const ControllerMethodsHistorique = require('../Controler/Historique');
+
+getAllNotifications
+  router.get('/getAllHistoriqueAdherent',ControllerMethodsHistorique.getHistoriqueAdherent );
+
+
+module.exports = router;

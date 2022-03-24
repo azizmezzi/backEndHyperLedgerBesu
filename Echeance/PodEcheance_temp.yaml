@@ -1,0 +1,56 @@
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: echeance
+#   namespace: default
+# spec:
+#   selector:
+#     app: echeance
+#   ports:
+#   - protocol: TCP
+#     port: 3004
+#     targetPort: 3004
+#   type: NodePort
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: echeance-service
+spec:
+  selector:
+    app: echeance
+  ports:
+    - port: 3004 # Default port for image
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echeance
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echeance
+  template:
+    metadata:
+      labels:
+        app: echeance
+    spec:
+      containers:
+      - name: echeance
+        image: ${dev_ip}:5000/echeance:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3004
+        resources:
+          requests:
+            # cpu 250m = 0.250 of cpu
+            # memory: "64Mi"
+            cpu: "250m"
+          #limits:
+            # memory: "128Mi"
+            #cpu: "500m"

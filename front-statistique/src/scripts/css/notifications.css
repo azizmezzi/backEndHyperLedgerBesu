@@ -1,0 +1,44 @@
+#notifications:empty:after {
+    content: "Vous n'avez aucune notification pour le moment";
+}
+
+/*-------------------------------------------------------------------------------*/
+
+.notification {
+    max-width: 500px;
+    padding: 15px;
+    
+    background-color: #FFF; transition: background-color .2s ease-out;
+    border: solid 1px rgba(0,0,0,.05);
+    border-radius: 5px;
+    box-shadow: 0 2px 3px rgba(0,0,0,.1);
+    
+    text-transform: uppercase;
+}
+.notification:not(:last-child) { margin-bottom: 15px; }
+
+.notification > div:first-child {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.notification > div:not(:last-child) {
+    margin-bottom: 13px;
+    padding-bottom: 13px;
+    border-bottom: solid 1px rgba(0,0,0,.1);
+}
+.notification > div > span { font-weight: 600; }
+.notification > div > span.date { margin: 0 auto 0 5px; }
+.notification > div > span.amount { font-size: 25px; }
+.notification > div > span.status {
+    padding: 0 10px;
+    
+    border-radius: 15px;
+    background-color: #E74C3C;
+    
+    text-transform: uppercase;
+    line-height: 20px;
+    font-size: 8px;
+    color: #FFF;
+}
